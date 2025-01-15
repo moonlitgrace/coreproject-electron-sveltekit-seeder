@@ -2,9 +2,9 @@ import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 const __dirname = import.meta.dirname;
 
-const isdev = !app.isPackaged || (process.env.NODE_ENV == 'development');
+const isDev = !app.isPackaged || (process.env.NODE_ENV == 'development');
 
-const base = isdev ? '../../build' : '../../';
+const base = isDev ? '../../build' : '../../';
 
 const createWindow = () => {
   // Create the browser window.
@@ -14,11 +14,12 @@ const createWindow = () => {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
-      contextIsolation: true,
-      nodeIntegration: true,
-      spellcheck: false,
-      devTools: true,
+      // contextIsolation: true,
+      // nodeIntegration: true,
+      // spellcheck: false,
+      // devTools: true,
       // preload: path.join(__dirname, 'preload.js'),
+      sandbox: false,
     }
   });
 
@@ -30,7 +31,12 @@ const createWindow = () => {
   mainWindow.setResizable(false);
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, base, 'index.html'));
+  if (isDev) {
+    mainWindow.loadURL('http://localhost:5173')
+    mainWindow.webContents.openDevTools();
+  } else {
+    mainWindow.loadFile(path.join(__dirname, base, 'index.html'));
+  }
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
